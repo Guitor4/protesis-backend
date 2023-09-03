@@ -1,6 +1,6 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-export const devConfig: PostgresConnectionOptions = {
+export const databaseConfig: PostgresConnectionOptions = {
   type: 'postgres',
   host: 'localhost',
   port: 5432,
@@ -10,3 +10,4 @@ export const devConfig: PostgresConnectionOptions = {
   entities: ['dist/**/*.entity{.ts,.js}'],
   synchronize: true,
 };
+''

@@ -1,18 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { StandardDateColumns } from "../shared/standardDateColumns";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { StandardDateColumns } from '../shared/standardDateColumns';
 
 @Entity()
 export class User extends StandardDateColumns {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
-    
-    @Column()
-    lastName: string;
-    
-    @Column({unique: true})
-    email: string;
-    
+  @Column()
+  name: string;
+
+  @Column()
+  lastName: string;
+
+  @Column()
+  email: string;
+
 }
+
+

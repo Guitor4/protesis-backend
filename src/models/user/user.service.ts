@@ -4,38 +4,42 @@ https://docs.nestjs.com/providers#services
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import {
-  EntityNotFoundError,
-  QueryFailedError,
-  Repository,
-  UpdateResult,
-} from 'typeorm';
+import { EntityNotFoundError, QueryFailedError } from 'typeorm';
 import { UserCreationDto } from './dto/user-creation.dto';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersSearchDto } from './dto/users-search.dto';
+import { UserRepository } from './user.repository';
+import { UserSearchDto } from './dto/user-search.dto';
 import { UserDeleteDto } from './dto/user-delete.dto';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+  constructor(protected userRepository: UserRepository) {}
 
   async getAllUsers(searchParams: UsersSearchDto) {
     try {
-      return this.userRepository.find({
-        skip: searchParams.skip,
-        take: searchParams.pageSize,
-      });
+      return await this.userRepository.getAllUsers(searchParams);
     } catch (error) {
       throw new Error(error.detail);
     }
   }
 
+  async getUser(searchParams: UserSearchDto) {
+    try {
+      return this.userRepository.getUser(searchParams);
+    } catch (error) {
+      switch (error.constructor) {
+        case EntityNotFoundError:
+          throw new EntityNotFoundError(User, searchParams.id);
+        default:
+          throw new Error(error);
+      }
+    }
+  }
+
   async createUser(data: UserCreationDto): Promise<User | undefined> {
     try {
-      return await this.userRepository.save(data);
+      return await this.userRepository.createUser(data);
     } catch (error) {
       console.log(error);
       switch (error.constructor) {
@@ -52,10 +56,11 @@ export class UserService {
 
   async updateUser(data: UserUpdateDto): Promise<User | undefined> {
     try {
-      const user = await this.userRepository.findOneOrFail({
-        where: { id: data.id },
-      });
-      return this.userRepository.save(user);
+      const user = await this.userRepository.getUser(data);
+      Object.assign(user, data);
+      console.log(user);
+      return await this.userRepository.updateUser(user);
+      // return this.userRepository.updateUser(user);
     } catch (error) {
       switch (error.constructor) {
         case EntityNotFoundError:
@@ -72,13 +77,15 @@ export class UserService {
     }
   }
 
-  async deleteUser(userId: UserDeleteDto) {
+  async deleteUser(data: UserDeleteDto) {
     try {
-      const user = await this.userRepository.findOneOrFail({
-        where: { id: +userId.userId },
+      const user = await this.userRepository.getUser({
+        id: data.id,
       });
-      await this.userRepository.softDelete({id: user.id});
-      return `Usuário n° ${user.id}, ${user.name + ' ' +user.lastName} excluído com sucesso !!`
+      await this.userRepository.deleteUser({ id: user.id });
+      return `Usuário n° ${user.id}, ${
+        user.name + ' ' + user.lastName
+      } excluído com sucesso !!`;
     } catch (error) {
       switch (error.constructor) {
         case EntityNotFoundError:
