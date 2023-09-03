@@ -31,7 +31,6 @@ export class AuthService {
       }
       delete user.login;
       delete user.password;
-      console.log(process.env.JWT_CONSTANT);
       return {
         token: this.jwtService.sign(JSON.stringify(user), {
           secret: process.env.JWT_CONSTANT,
