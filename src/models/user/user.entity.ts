@@ -15,6 +15,9 @@ export class User extends StandardDateColumns {
   @Column()
   email: string;
 
+  @Column({ select: false })
+  login: string;
+
+  @Column({ select: false })
+  password: string;
 }
-
-

@@ -3,15 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UsersSearchDto } from './dto/users-search.dto';
-import { UserSearchDto } from './dto/user-search.dto';
 import { UserCreationDto } from './dto/user-creation.dto';
-import { UserUpdateDto } from './dto/user-update.dto';
 import { UserDeleteDto } from './dto/user-delete.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(
-    @InjectRepository(User) private OrmUserRepository: Repository<User>,
+    @InjectRepository(User) protected OrmUserRepository: Repository<User>,
   ) {}
 
   public async getAllUsers(searchParams: UsersSearchDto): Promise<User[]> {
@@ -21,8 +19,8 @@ export class UserRepository {
     });
   }
 
-  public async getUser(
-    searchParams: UserSearchDto | UserUpdateDto,
+  public async getUserById(
+    searchParams: Pick<User, 'id'>,
   ): Promise<User> {
     try {
       return await this.OrmUserRepository.findOneOrFail({
@@ -32,6 +30,40 @@ export class UserRepository {
       switch (error.constructor) {
         case EntityNotFoundError:
           throw new EntityNotFoundError(User, searchParams.id);
+        default:
+          throw new Error(error);
+      }
+    }
+  }
+
+  public async getUserByEmail(
+    searchParams: Pick<User, 'email'>,
+  ): Promise<User> {
+    try {
+      return await this.OrmUserRepository.findOneOrFail({
+        where: { email: searchParams.email }, select: ['password', 'login']
+      });
+    } catch (error) {
+      switch (error.constructor) {
+        case EntityNotFoundError:
+          throw new EntityNotFoundError(User, searchParams.email);
+        default:
+          throw new Error(error);
+      }
+    }
+  }
+
+  public async getUserByLogin(
+    searchParams: Pick<User, 'login'>,
+  ): Promise<User> {
+    try {
+      return await this.OrmUserRepository.findOneOrFail({
+        where: { login: searchParams.login }, select: ['login', 'password', 'email', 'name']
+      });
+    } catch (error) {
+      switch (error.constructor) {
+        case EntityNotFoundError:
+          throw new EntityNotFoundError(User, searchParams.login);
         default:
           throw new Error(error);
       }

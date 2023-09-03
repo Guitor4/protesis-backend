@@ -9,6 +9,7 @@ import {
   Get,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { UserCreationDto } from './dto/user-creation.dto';
@@ -17,6 +18,7 @@ import { UserUpdateDto } from './dto/user-update.dto';
 import { UsersSearchDto } from './dto/users-search.dto';
 import { UserDeleteDto } from './dto/user-delete.dto';
 import { UserSearchDto } from './dto/user-search.dto';
+import { UserPasswordRedefinitionDto } from '../auth/dto/user-password-redefinition.dto';
 
 @Controller('user')
 export class UserController {
@@ -29,10 +31,10 @@ export class UserController {
 
   @Get('')
   getUser(@Query() query: UserSearchDto) {
-    try{
+    try {
       return this.userService.getUser(query);
     } catch (error) {
-      console.log('cheguei no controller')
+      console.log('cheguei no controller');
     }
   }
 
@@ -50,4 +52,6 @@ export class UserController {
   deleteUser(@Query() query: UserDeleteDto) {
     return this.userService.deleteUser(query);
   }
+
+
 }

@@ -1,13 +1,17 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
+import 'dotenv-config';
+
+console.log(process.env.DB_USERNAME);
 
 export const DataBaseConnection = TypeOrmModule.forRoot({
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: 'extelar@2023',
-  database: 'protesis',
-  entities: ['dist/models/**/*.entity.js'],
+  host: process.env.DB_HOST,
+  port: +process.env.DB_PORT!,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  entities: ['dist/src/models/**/*.entity.ts'],
   synchronize: true,
+  autoLoadEntities: true,
   logging: ['query', 'error', 'migration'],
 });

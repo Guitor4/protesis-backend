@@ -11,6 +11,8 @@ import { UsersSearchDto } from './dto/users-search.dto';
 import { UserRepository } from './user.repository';
 import { UserSearchDto } from './dto/user-search.dto';
 import { UserDeleteDto } from './dto/user-delete.dto';
+import { UserPasswordRedefinitionDto } from '../auth/dto/user-password-redefinition.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -26,7 +28,7 @@ export class UserService {
 
   async getUser(searchParams: UserSearchDto) {
     try {
-      return this.userRepository.getUser(searchParams);
+      return this.userRepository.getUserById(searchParams);
     } catch (error) {
       switch (error.constructor) {
         case EntityNotFoundError:
@@ -39,6 +41,11 @@ export class UserService {
 
   async createUser(data: UserCreationDto): Promise<User | undefined> {
     try {
+      const saltRoundsNumber = 10;
+      const hashedPassword = await bcrypt.hash(data.password, saltRoundsNumber);
+
+      Object.assign(data, { password: hashedPassword });
+      
       return await this.userRepository.createUser(data);
     } catch (error) {
       console.log(error);
@@ -56,7 +63,7 @@ export class UserService {
 
   async updateUser(data: UserUpdateDto): Promise<User | undefined> {
     try {
-      const user = await this.userRepository.getUser(data);
+      const user = await this.userRepository.getUserById(data);
       Object.assign(user, data);
       console.log(user);
       return await this.userRepository.updateUser(user);
@@ -79,7 +86,7 @@ export class UserService {
 
   async deleteUser(data: UserDeleteDto) {
     try {
-      const user = await this.userRepository.getUser({
+      const user = await this.userRepository.getUserById({
         id: data.id,
       });
       await this.userRepository.deleteUser({ id: user.id });
