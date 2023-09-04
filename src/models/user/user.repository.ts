@@ -58,7 +58,7 @@ export class UserRepository {
   ): Promise<User> {
     try {
       return await this.OrmUserRepository.findOneOrFail({
-        where: { login: searchParams.login }, select: ['login', 'password', 'email', 'name']
+        where: { login: searchParams.login }, select: ['login', 'password', 'email', 'name', 'lastName', 'id']
       });
     } catch (error) {
       switch (error.constructor) {
