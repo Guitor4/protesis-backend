@@ -106,7 +106,7 @@ export class AuthService {
     data: UserPasswordRedefinitionDto,
   ): Promise<string> {
     try {
-      //Implementar redefinição de senha baseado em um código de segurança gerado e enviado ao usuário anteriormente por meio da rota de Requisição de reset de senha (RequestPasswordReset)
+      //Implementar redefinição de senha baseado em um código de segurança salvo no banco, que foi gerado e enviado ao usuário anteriormente por meio da rota de Requisição de reset de senha (RequestPasswordReset)
       return 'a';
     } catch (error) {
       throw new Error();
