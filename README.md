@@ -1,6 +1,9 @@
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
+<span>
+  Backend de um projeto de fim de curso técnico originalmente em  PHP que estou refazendo em NodeJS utilizando o framework NestJS :D
+</span>
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
