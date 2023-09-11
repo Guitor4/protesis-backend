@@ -3,5 +3,5 @@ import { JwtModule } from '@nestjs/jwt';
 export const JwtConfig = JwtModule.register({
   global: true,
   secret: process.env.JWT_CONSTANT,
-//   signOptions: { expiresIn: '3h'},
+  signOptions: { expiresIn: '2s'},
 });

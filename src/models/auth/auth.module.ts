@@ -1,28 +1,21 @@
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { AuthController } from './auth.controller';
 /*
 https://docs.nestjs.com/modules
 */
 
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
-import { PasswordRedefinitionTokenMiddleware } from './middleware/password-redefinition-token.middleware';
+import { Module } from '@nestjs/common';
 import { UserModule } from '../user/user.module';
 import { JwtConfig } from './configs/jwt.config';
+import { SessionRepository } from './repository/session.repository';
+import { UserSession } from './entity/session.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SharedServicesModule } from 'src/shared/services/sharedservices.module';
 
 @Module({
-  imports: [UserModule, JwtConfig],
+  imports: [UserModule, JwtConfig, TypeOrmModule.forFeature([UserSession]), SharedServicesModule],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, SessionRepository],
+  exports:[AuthService, SessionRepository]
 })
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(PasswordRedefinitionTokenMiddleware)
-      .forRoutes({ path: 'auth/redefine-password', method: RequestMethod.PUT });
-  }
-}
+export class AuthModule {}

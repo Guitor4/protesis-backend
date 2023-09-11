@@ -16,7 +16,7 @@ export class UserCreationDto {
 
   @IsString()
   @IsNotEmpty()
-  login: string;
+  username: string;
 
   @IsString()
   @IsNotEmpty()

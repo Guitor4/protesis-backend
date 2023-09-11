@@ -1,5 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { StandardDateColumns } from '../shared/standardDateColumns';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { StandardDateColumns } from '../../shared/interfaces/standardDateColumns';
+import { UserSession } from '../auth/entity/session.entity';
 
 @Entity()
 export class User extends StandardDateColumns {
@@ -12,12 +20,16 @@ export class User extends StandardDateColumns {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ select: false })
-  login: string;
+  username: string;
 
   @Column({ select: false })
   password: string;
+
+  @OneToOne(() => UserSession, (session) => session.id, { nullable: true })
+  @JoinColumn({ name: 'user_session' })
+  activeSession: UserSession;
 }

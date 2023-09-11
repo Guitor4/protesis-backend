@@ -19,9 +19,7 @@ export class UserRepository {
     });
   }
 
-  public async getUserById(
-    searchParams: Pick<User, 'id'>,
-  ): Promise<User> {
+  public async getUserById(searchParams: Pick<User, 'id'>): Promise<User> {
     try {
       return await this.OrmUserRepository.findOneOrFail({
         where: { id: searchParams.id },
@@ -36,12 +34,29 @@ export class UserRepository {
     }
   }
 
+  public async getUserLoginByEmail(
+    searchParams: Pick<User, 'email'>,
+  ): Promise<User> {
+    try {
+      return await this.OrmUserRepository.findOneOrFail({
+        where: { email: searchParams.email },
+        select: ['password', 'username'],
+      });
+    } catch (error) {
+      switch (error.constructor) {
+        case EntityNotFoundError:
+          throw new EntityNotFoundError(User, searchParams.email);
+        default:
+          throw new Error(error);
+      }
+    }
+  }
   public async getUserByEmail(
     searchParams: Pick<User, 'email'>,
   ): Promise<User> {
     try {
       return await this.OrmUserRepository.findOneOrFail({
-        where: { email: searchParams.email }, select: ['password', 'login']
+        where: { email: searchParams.email },
       });
     } catch (error) {
       switch (error.constructor) {
@@ -53,17 +68,18 @@ export class UserRepository {
     }
   }
 
-  public async getUserByLogin(
-    searchParams: Pick<User, 'login'>,
+  public async getUserLoginByUsername(
+    searchParams: Pick<User, 'username'>,
   ): Promise<User> {
     try {
       return await this.OrmUserRepository.findOneOrFail({
-        where: { login: searchParams.login }, select: ['login', 'password', 'email', 'name', 'lastName', 'id']
+        where: { username: searchParams.username },
+        select: ['username', 'password', 'email', 'name', 'lastName', 'id'],
       });
     } catch (error) {
       switch (error.constructor) {
         case EntityNotFoundError:
-          throw new EntityNotFoundError(User, searchParams.login);
+          throw new EntityNotFoundError(User, searchParams.username);
         default:
           throw new Error(error);
       }

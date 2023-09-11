@@ -1,8 +1,6 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import 'dotenv-config';
 
-console.log(process.env.DB_USERNAME);
-
 export const DataBaseConnection = TypeOrmModule.forRoot({
   type: 'postgres',
   host: process.env.DB_HOST,
