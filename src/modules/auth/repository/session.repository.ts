@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  DeleteResult,
   FindManyOptions,
   FindOneOptions,
   FindOptions,
@@ -10,7 +11,6 @@ import {
 import { SessionCreationDTO } from '../dto/session-creation.dto';
 import { UserSession } from '../entity/session.entity';
 import { SessionSearchDTO } from '../dto/session-search.dto';
-import { Session } from 'inspector';
 @Injectable()
 export class SessionRepository {
   constructor(
@@ -22,13 +22,13 @@ export class SessionRepository {
     return await this.TypeOrmSessionRepository.save(data);
   }
 
-  async getSessionByToken(data: Partial<SessionSearchDTO>) {
+  async getSessionByToken(data: Partial<SessionSearchDTO>):Promise<UserSession | null> {
     return await this.TypeOrmSessionRepository.findOne({
       where: { token: data.token },
     });
   }
 
-  async getSessionByUser(data: SessionSearchDTO) {
+  async getSessionByUser(data: SessionSearchDTO):Promise<UserSession | null> {
     //Objeto de busca tipado pois não estava querendo aceitar o objeto criado dentro do parâmetro da função
     const findOption: FindOneOptions<any> = {
       where: {
@@ -39,7 +39,7 @@ export class SessionRepository {
     return await this.TypeOrmSessionRepository.findOne(findOption);
   }
 
-  async getUserSessions(data: Pick<SessionSearchDTO, 'user'>) {
+  async getUserSessions(data: Pick<SessionSearchDTO, 'user'>):Promise<UserSession[] | null> {
     //Objeto de busca tipado pois não estava querendo aceitar o objeto criado dentro do parâmetro da função
     const findOption: FindManyOptions<any> = {
       where: {
@@ -53,7 +53,7 @@ export class SessionRepository {
     });
   }
 
-  async deleteSession(data: UserSession) {
+  async deleteSession(data: UserSession):Promise<DeleteResult> {
     return await this.TypeOrmSessionRepository.delete(data.id);
   }
 
